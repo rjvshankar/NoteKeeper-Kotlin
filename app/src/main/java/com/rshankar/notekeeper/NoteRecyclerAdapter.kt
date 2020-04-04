@@ -11,6 +11,7 @@ import android.widget.TextView
 /**
 Created by rajiv on 4/3/20
  */
+
 class NoteRecyclerAdapter(private val context: Context, private val notes: List<NoteInfo>) :
         RecyclerView.Adapter<NoteRecyclerAdapter.ViewHolder>() {
 

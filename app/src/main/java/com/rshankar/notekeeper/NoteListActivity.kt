@@ -1,10 +1,13 @@
 package com.rshankar.notekeeper
 
+/**
+Created by rajiv on 3/27/20
+ */
+
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.widget.ArrayAdapter
 
 import kotlinx.android.synthetic.main.activity_note_list.*
 import kotlinx.android.synthetic.main.content_note_list.*
