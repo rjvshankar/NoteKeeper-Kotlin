@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Ajustes</string>
+    <string name="action_next">Siguiente</string>
+    <string name="string_todo">TODO</string>
+
+    <string name="title_activity_note_list">NoteListActivity</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_items">NoteKeeper</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="app_name">NoteKeeper</string>
+    <string name="note_text_hint">Texto de la nota</string>
+    <string name="note_activity_label">Editar Nota</string>
+    <string name="note_title_hint">Titulo de la nota</string>
+    <string name="nav_share_message">Don\'t you think you\'ve shared enough</string>
+    <string name="nav_send_message">Enviar</string>
+    <string name="nav_how_many_message_format">Notas: %1$d | Cursos: %2$d</string>
+</resources>

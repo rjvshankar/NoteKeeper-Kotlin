@@ -1,19 +1,17 @@
 package com.rshankar.notekeeper
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import android.support.test.espresso.Espresso.onData
+import android.support.test.espresso.Espresso.onView
+import android.support.test.espresso.action.ViewActions.click
+import android.support.test.espresso.assertion.ViewAssertions.matches
+import android.support.test.espresso.matcher.ViewMatchers.*
+import android.support.test.rule.ActivityTestRule
+import android.support.test.runner.AndroidJUnit4
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import androidx.test.espresso.Espresso.*
-import androidx.test.espresso.matcher.ViewMatchers.*
 import org.hamcrest.Matchers.*
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.rule.ActivityTestRule
 import org.junit.Rule
-import androidx.test.espresso.Espresso.pressBack
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.assertion.ViewAssertions.matches
-
 /**
  * Created by rajiv on 4/2/20
  */

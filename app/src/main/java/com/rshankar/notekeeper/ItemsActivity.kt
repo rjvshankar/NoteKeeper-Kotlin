@@ -6,6 +6,7 @@ Created by rajiv on 3/27/20
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
@@ -20,6 +21,9 @@ import kotlinx.android.synthetic.main.app_bar_items.*
 import kotlinx.android.synthetic.main.content_items.*
 
 class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    private val tag = this::class.simpleName
+    private var navItemId = DEFAULT_NAV_ITEM_SELECTED
+    private var isCreatingNewNote = false
 
     private val noteLayoutManager by lazy {
         LinearLayoutManager(this)
@@ -30,7 +34,7 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     }
 
     private val courseLayoutManager by lazy {
-        GridLayoutManager(this, 2)
+        GridLayoutManager(this, resources.getInteger(R.integer.course_grid_span))
     }
 
     private val courseRecyclerAdapter by lazy {
@@ -43,11 +47,10 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { _ ->
+            isCreatingNewNote = true
             startActivity(Intent(this, NoteActivity::class.java))
 
         }
-
-        displayNotes()
 
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -55,6 +58,43 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        selectNavigationMenuItem()
+    }
+
+    private fun selectNavigationMenuItem() {
+        when (navItemId) {
+            R.id.nav_notes -> {
+                displayNotes()
+            }
+            R.id.nav_courses -> {
+                displayCourses()
+            }
+            R.id.nav_share -> {
+                handleSelection(R.string.nav_share_message)
+            }
+            R.id.nav_send -> {
+                handleSelection(R.string.nav_send_message)
+            }
+            R.id.nav_how_many -> {
+                val message = getString(R.string.nav_how_many_message_format,
+                        DataManager.notes.size, DataManager.courses.size)
+                Snackbar.make(listItems, message, Snackbar.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        if (!isCreatingNewNote)
+            outState?.putInt(NAV_ITEM_SELECTED, navItemId)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        navItemId = savedInstanceState?.getInt(NAV_ITEM_SELECTED, DEFAULT_NAV_ITEM_SELECTED) ?:
+                intent.getIntExtra(NAV_ITEM_SELECTED, DEFAULT_NAV_ITEM_SELECTED)
+        selectNavigationMenuItem()
     }
 
     private fun displayNotes() {
@@ -102,26 +142,14 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_notes -> {
-                displayNotes()
-            }
-            R.id.nav_courses -> {
-                displayCourses()
-            }
-            R.id.nav_share -> {
-                handleSelection("Share")
-            }
-            R.id.nav_send -> {
-                handleSelection("Send")
-            }
-        }
+        navItemId = item.itemId
+        selectNavigationMenuItem()
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    private fun handleSelection(message: String) {
-        Snackbar.make(listItems, message, Snackbar.LENGTH_LONG).show()
+    private fun handleSelection(stringId: Int) {
+        Snackbar.make(listItems, stringId, Snackbar.LENGTH_LONG).show()
     }
 }
