@@ -24,4 +24,16 @@
     <string name="nav_how_many_message_format">Notes: %1$d | Courses: %2$d</string>
     <string name="appwidget_text">NOTES</string>
     <string name="add_widget" translatable="false">Add widget</string>
+    <string name="label_checkbox_enabled">Enabled</string>
+    <string name="label_color_selector">Note Color</string>
+
+    <string-array name="note_color_array">
+        <item>#E57373</item>
+        <item>#BA68C8</item>
+        <item>#64B5F6</item>
+        <item>#81C784</item>
+        <item>#FFF176</item>
+        <item>#FFB74D</item>
+        <item>#90A4AE</item>
+    </string-array>
 </resources>

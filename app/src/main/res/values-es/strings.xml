@@ -20,4 +20,6 @@
     <string name="nav_send_message">Enviar</string>
     <string name="nav_how_many_message_format">Notas: %1$d | Cursos: %2$d</string>
     <string name="appwidget_text">NOTAS</string>
+    <string name="label_checkbox_enabled">Habilitad(o/a)</string>
+    <string name="label_color_selector">Nota de Color</string>
 </resources>

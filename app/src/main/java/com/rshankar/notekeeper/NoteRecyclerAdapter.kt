@@ -30,6 +30,7 @@ class NoteRecyclerAdapter(private val context: Context, private val notes: List<
         holder.textCourse?.text = note.course?.title
         holder.textTitle?.text = note.title
         holder.notePosition = position
+        holder.color.setBackgroundColor(note.color)
     }
 
     fun setOnSelectedListener(listener: OnNoteSelectedListener) {
@@ -40,6 +41,7 @@ class NoteRecyclerAdapter(private val context: Context, private val notes: List<
         val textCourse = itemView.findViewById<TextView?>(R.id.textCourse)
         val textTitle = itemView.findViewById<TextView?>(R.id.textTitle)
         var notePosition = 0
+        var color: View = itemView.findViewById(R.id.noteColor)
         init {
             itemView.setOnClickListener {
                 onNoteSelectedListener?.onNoteSelected(notes[notePosition])

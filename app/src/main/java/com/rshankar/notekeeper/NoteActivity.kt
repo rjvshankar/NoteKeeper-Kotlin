@@ -4,6 +4,7 @@ package com.rshankar.notekeeper
 Created by rajiv on 3/27/20
  */
 
+import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -19,8 +20,9 @@ import kotlinx.android.synthetic.main.content_main.*
 class NoteActivity : AppCompatActivity() {
     private val tag = this::class.simpleName
     private var notePosition = POSITION_NOT_SET
+    private var noteColor: Int = Color.TRANSPARENT
 
-    val noteGetTogetherHelper = NoteGetTogetherHelper(this, this.lifecycle)
+    private val noteGetTogetherHelper = NoteGetTogetherHelper(this, this.lifecycle)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,9 +41,13 @@ class NoteActivity : AppCompatActivity() {
 
         if(notePosition != POSITION_NOT_SET)
             displayNote()
-        else {
+        else
             createNewNote()
+
+        colorSelector.addListener { color ->
+            noteColor = color
         }
+
         Log.d(tag, "onCreate")
     }
 
@@ -120,6 +126,8 @@ class NoteActivity : AppCompatActivity() {
         val note = DataManager.notes[notePosition]
         textNoteTitle.setText(note.title)
         textNoteText.setText(note.text)
+        noteColor = note.color
+        colorSelector.selectedColorValue = noteColor
 
         val coursePosition = DataManager.courses.values.indexOf(note.course)
         spinnerCourses.setSelection(coursePosition)
@@ -141,6 +149,7 @@ class NoteActivity : AppCompatActivity() {
         note.title = textNoteTitle.text.toString()
         note.text = textNoteText.text.toString()
         note.course = spinnerCourses.selectedItem as CourseInfo
+        note.color = this.noteColor
         NoteKeeperAppWidget.sendRefreshBroadcast(this)
     }
 }

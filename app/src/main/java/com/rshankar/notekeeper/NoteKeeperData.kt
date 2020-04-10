@@ -1,5 +1,7 @@
 package com.rshankar.notekeeper
 
+import android.graphics.Color
+
 /**
 Created by rajiv on 3/27/20
  */
@@ -16,5 +18,6 @@ data class CourseInfo (
 data class NoteInfo (
     var course: CourseInfo? = null,
     var title: String? = null,
-    var text: String? = null)
+    var text: String? = null,
+    var color:Int = Color.TRANSPARENT)
 
