@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
+import com.rshankar.notekeeper.PseudoLocationManager
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -18,6 +19,8 @@ import kotlinx.android.synthetic.main.content_main.*
 class NoteActivity : AppCompatActivity() {
     private val tag = this::class.simpleName
     private var notePosition = POSITION_NOT_SET
+
+    val noteGetTogetherHelper = NoteGetTogetherHelper(this, this.lifecycle)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +43,12 @@ class NoteActivity : AppCompatActivity() {
             createNewNote()
         }
         Log.d(tag, "onCreate")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveNote()
+        Log.d(tag, "onPause")
     }
 
     private fun createNewNote() {
@@ -73,9 +82,33 @@ class NoteActivity : AppCompatActivity() {
                 }
                 true
             }
+            R.id.action_get_together -> {
+                noteGetTogetherHelper.sendMessage(DataManager.loadNote(notePosition))
+                true
+            }
+            R.id.action_reminder -> {
+                ReminderNotification.notify(this,
+                    "Reminder",
+                    getString(R.string.reminder_body, DataManager.notes[notePosition].title),
+                    notePosition
+                )
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        if(notePosition >= DataManager.notes.lastIndex) {
+            val menuItem = menu?.findItem(R.id.action_next)
+            if(menuItem != null) {
+                menuItem.icon = getDrawable(R.drawable.ic_block_white_24dp)
+            }
+        }
+
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     private fun displayNote() {
         if(notePosition > DataManager.notes.lastIndex) {
             showMessage("Note not found")
@@ -103,27 +136,11 @@ class NoteActivity : AppCompatActivity() {
         invalidateOptionsMenu()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        if(notePosition >= DataManager.notes.lastIndex) {
-            val menuItem = menu?.findItem(R.id.action_next)
-            if(menuItem != null) {
-                menuItem.icon = getDrawable(R.drawable.ic_block_white_24dp)
-            }
-        }
-
-        return super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        saveNote()
-        Log.d(tag, "onPause")
-    }
-
     private fun saveNote() {
         val note = DataManager.notes[notePosition]
         note.title = textNoteTitle.text.toString()
         note.text = textNoteText.text.toString()
         note.course = spinnerCourses.selectedItem as CourseInfo
+        NoteKeeperAppWidget.sendRefreshBroadcast(this)
     }
 }

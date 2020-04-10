@@ -1,7 +1,6 @@
 package com.rshankar.notekeeper
 
 import android.content.Context
-import android.content.Intent
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -25,12 +24,12 @@ class CourseRecyclerAdapter(private val context: Context, private val courses: L
         holder.coursePosition = position
     }
 
-    inner class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
-        val textCourse = itemView?.findViewById<TextView?>(R.id.textCourse)
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val textCourse = itemView.findViewById<TextView?>(R.id.textCourse)
         var coursePosition = 0
         init {
-            itemView?.setOnClickListener {
-                Snackbar.make(it, courses[coursePosition]?.title, Snackbar.LENGTH_LONG).show()
+            itemView.setOnClickListener {
+                Snackbar.make(it, courses[coursePosition].title, Snackbar.LENGTH_LONG).show()
             }
         }
     }

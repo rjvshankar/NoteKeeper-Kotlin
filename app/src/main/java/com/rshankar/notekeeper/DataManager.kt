@@ -12,8 +12,43 @@ object DataManager {
         initializeNotes()
     }
 
+    fun loadNotes(): List<NoteInfo> {
+        simulateLoadDelay()
+        return notes
+    }
+
+    fun loadNotes(vararg noteIds: Int): List<NoteInfo> {
+        simulateLoadDelay()
+        val noteList: List<NoteInfo>
+
+        if(noteIds.isEmpty())
+            noteList = notes
+        else {
+            noteList = ArrayList<NoteInfo>(noteIds.size)
+            for(noteId in noteIds)
+                noteList.add(notes[noteId])
+        }
+        return noteList
+    }
+
+    fun loadNote(noteId: Int) = notes[noteId]
+
+    fun isLastNoteId(noteId: Int) = noteId == notes.lastIndex
+
+    private fun idOfNote(note: NoteInfo) = notes.indexOf(note)
+
+    fun noteIdsAsIntArray(notes: List<NoteInfo>): IntArray {
+        val noteIds = IntArray(notes.size)
+        for(index in 0..notes.lastIndex)
+            noteIds[index] = this.idOfNote(notes[index])
+        return noteIds
+    }
+
     fun addNote(course: CourseInfo, noteTitle: String, noteText: String): Int {
-        val note = NoteInfo(course, noteTitle, noteText)
+        return addNote(NoteInfo(course, noteTitle, noteText))
+    }
+
+    private fun addNote(note: NoteInfo): Int {
         notes.add(note)
 
         return notes.lastIndex
@@ -27,6 +62,10 @@ object DataManager {
                 return note
 
         return null
+    }
+
+    private fun simulateLoadDelay() {
+        // Thread.sleep(0000)
     }
 
     private fun initializeCourses() {

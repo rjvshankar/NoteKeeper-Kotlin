@@ -4,7 +4,12 @@ package com.rshankar.notekeeper
 Created by rajiv on 3/27/20
  */
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.design.widget.NavigationView
@@ -20,9 +25,11 @@ import kotlinx.android.synthetic.main.activity_items.*
 import kotlinx.android.synthetic.main.app_bar_items.*
 import kotlinx.android.synthetic.main.content_items.*
 
-class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class ItemsActivity : AppCompatActivity(),
+        NavigationView.OnNavigationItemSelectedListener,
+        NoteRecyclerAdapter.OnNoteSelectedListener {
+
     private val tag = this::class.simpleName
-    private var navItemId = DEFAULT_NAV_ITEM_SELECTED
     private var isCreatingNewNote = false
 
     private val noteLayoutManager by lazy {
@@ -30,7 +37,9 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     }
 
     private val noteRecyclerAdapter by lazy {
-        NoteRecyclerAdapter(this, DataManager.notes)
+        val adapter = NoteRecyclerAdapter(this, DataManager.loadNotes())
+        adapter.setOnSelectedListener(this)
+        adapter
     }
 
     private val courseLayoutManager by lazy {
@@ -39,6 +48,16 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
     private val courseRecyclerAdapter by lazy {
         CourseRecyclerAdapter(this, DataManager.courses.values.toList())
+    }
+
+    private val recentlyViewedNoteRecyclerAdapter by lazy {
+        val adapter = NoteRecyclerAdapter(this, viewModel.recentlyViewedNotes)
+        adapter.setOnSelectedListener(this)
+        adapter
+    }
+
+    private val viewModel by lazy {
+        ViewModelProviders.of(this)[ItemsActivityViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +71,11 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         }
 
+        if (savedInstanceState != null && viewModel.isNewlyCreated) {
+            viewModel.restoreState(savedInstanceState)
+        }
+
+        viewModel.isNewlyCreated = false
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -60,41 +84,18 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         nav_view.setNavigationItemSelectedListener(this)
 
         selectNavigationMenuItem()
-    }
-
-    private fun selectNavigationMenuItem() {
-        when (navItemId) {
-            R.id.nav_notes -> {
-                displayNotes()
-            }
-            R.id.nav_courses -> {
-                displayCourses()
-            }
-            R.id.nav_share -> {
-                handleSelection(R.string.nav_share_message)
-            }
-            R.id.nav_send -> {
-                handleSelection(R.string.nav_send_message)
-            }
-            R.id.nav_how_many -> {
-                val message = getString(R.string.nav_how_many_message_format,
-                        DataManager.notes.size, DataManager.courses.size)
-                Snackbar.make(listItems, message, Snackbar.LENGTH_LONG).show()
-            }
-        }
+        registerNotificationChanel()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        if (!isCreatingNewNote)
-            outState?.putInt(NAV_ITEM_SELECTED, navItemId)
+        if (outState != null) {
+            viewModel.saveState(outState)
+        }
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-        navItemId = savedInstanceState?.getInt(NAV_ITEM_SELECTED, DEFAULT_NAV_ITEM_SELECTED) ?:
-                intent.getIntExtra(NAV_ITEM_SELECTED, DEFAULT_NAV_ITEM_SELECTED)
-        selectNavigationMenuItem()
+    override fun onNoteSelected(note: NoteInfo) {
+        viewModel.addToRecentlyViewedNotes(note)
     }
 
     private fun displayNotes() {
@@ -111,9 +112,16 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         nav_view.menu.findItem(R.id.nav_courses).isChecked = true
     }
 
+    private fun displayRecentlyViewedNotes() {
+        listItems.layoutManager = noteLayoutManager
+        listItems.adapter = recentlyViewedNoteRecyclerAdapter
+
+        nav_view.menu.findItem(R.id.nav_recent_notes).isChecked = true
+    }
+
     override fun onResume() {
         super.onResume()
-        listItems.adapter.notifyDataSetChanged()
+        listItems.adapter?.notifyDataSetChanged()
     }
 
     override fun onBackPressed() {
@@ -142,14 +150,52 @@ class ItemsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        navItemId = item.itemId
+        viewModel.navDrawerDisplaySelection = item.itemId
         selectNavigationMenuItem()
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 
+    private fun selectNavigationMenuItem() {
+        when (viewModel.navDrawerDisplaySelection) {
+            R.id.nav_notes -> {
+                displayNotes()
+            }
+            R.id.nav_courses -> {
+                displayCourses()
+            }
+            R.id.nav_recent_notes -> {
+                displayRecentlyViewedNotes()
+            }
+            R.id.nav_share -> {
+                handleSelection(R.string.nav_share_message)
+            }
+            R.id.nav_send -> {
+                handleSelection(R.string.nav_send_message)
+            }
+            R.id.nav_how_many -> {
+                val message = getString(R.string.nav_how_many_message_format,
+                    DataManager.notes.size, DataManager.courses.size)
+                Snackbar.make(listItems, message, Snackbar.LENGTH_LONG).show()
+            }
+        }
+    }
+
     private fun handleSelection(stringId: Int) {
         Snackbar.make(listItems, stringId, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun registerNotificationChanel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val nm = getSystemService(Context.NOTIFICATION_SERVICE)
+                as NotificationManager
+
+            val channel = NotificationChannel(ReminderNotification.REMINDER_CHANNEL,
+                "Note Reminders",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            nm.createNotificationChannel(channel)
+        }
     }
 }

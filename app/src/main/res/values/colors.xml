@@ -5,4 +5,5 @@
     <color name="colorAccent">@color/pluralsightOrange</color>
     <color name="pluralsightOrange">#f05a28</color>
     <color name="pluralsightPlum">#A7305D</color>
+    <color name="darkOrange">#b9451e</color>
 </resources>

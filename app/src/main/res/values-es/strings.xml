@@ -19,4 +19,5 @@
     <string name="nav_share_message">Don\'t you think you\'ve shared enough</string>
     <string name="nav_send_message">Enviar</string>
     <string name="nav_how_many_message_format">Notas: %1$d | Cursos: %2$d</string>
+    <string name="appwidget_text">NOTAS</string>
 </resources>
