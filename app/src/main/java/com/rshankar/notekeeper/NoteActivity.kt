@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter
 import com.rshankar.notekeeper.PseudoLocationManager
 
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.color_selector.view.*
 import kotlinx.android.synthetic.main.content_main.*
 
 class NoteActivity : AppCompatActivity() {
@@ -126,8 +127,8 @@ class NoteActivity : AppCompatActivity() {
         val note = DataManager.notes[notePosition]
         textNoteTitle.setText(note.title)
         textNoteText.setText(note.text)
+        colorSelector.selectedColorValue = note.color
         noteColor = note.color
-        colorSelector.selectedColorValue = noteColor
 
         val coursePosition = DataManager.courses.values.indexOf(note.course)
         spinnerCourses.setSelection(coursePosition)

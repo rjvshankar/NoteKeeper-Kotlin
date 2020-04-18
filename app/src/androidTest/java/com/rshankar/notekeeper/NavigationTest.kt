@@ -8,12 +8,12 @@ import android.support.test.espresso.Espresso.*
 import android.support.test.espresso.matcher.ViewMatchers.*
 import org.hamcrest.Matchers.*
 import android.support.test.espresso.action.ViewActions.*
-import android.support.test.rule.ActivityTestRule
 import org.junit.Rule
 import android.support.test.espresso.assertion.ViewAssertions.*
 import android.support.test.espresso.contrib.DrawerActions
 import android.support.test.espresso.contrib.NavigationViewActions
 import android.support.test.espresso.contrib.RecyclerViewActions
+import androidx.test.rule.ActivityTestRule
 
 /**
  * Created by rajiv on 4/4/20

@@ -4,8 +4,8 @@ import android.support.test.espresso.Espresso.onData
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.*
 import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
